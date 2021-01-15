@@ -6,9 +6,8 @@ from modules.skill import *
 from modules.chests import * 
 from modules.levels import *
 
-
 class Arrow():
-    def __init__(self, screen, game, x, y, direction, position, dmg):
+    def __init__(self, screen,game, x, y, direction, position, dmg):
         self.direction = direction
         self.game = game
         self.speed = 15
@@ -37,8 +36,8 @@ class Arrow():
             self.y -= self.speed
         if self.contact_check(self.game.obj):
             self.remove()
-        if self.x <= LEFT_MOVE or self.x >= LEFT_MOVE + PLAYER_SPEED * 22 or self.y <= (0) or self.y >= (PLAYER_SPEED * 16 - PLAYER_SPEED * 0.2):
-            self.remove()
+        if self.x <= LEFT_MOVE or self.x >= LEFT_MOVE + PLAYER_SPEED * 22 or self.y <= (0) or self.y >= (PLAYER_SPEED * 16 - PLAYER_SPEED*0.2):
+                self.remove()
     
     def contact_check(self, obj):
         arrow_x, arrow_y = (self.x - LEFT_MOVE) // PLAYER_SPEED, (self.y - PLAYER_SPEED // 2) // PLAYER_SPEED
@@ -48,40 +47,41 @@ class Arrow():
                     el_x, el_y = el.position[0], el.position[1]
                     if self.direction != LOOK_UP:
                         if arrow_x == el_x and arrow_y == el_y:
-                            el.hp_add(-int(self.damage))
-                            if el.hp > 0:
-                                self.game.play_music(el.music_kick)
+                            el.hp_add(dmg=-int(self.damage))
+                            if el.hp >0:
+                                self.game.play_music(el.musik_kick)
                             self.remove()
                     else:
                         if arrow_x == el_x and arrow_y + 1 == el_y:
-                            el.hp_add(-int(self.damage))
-                            if el.hp > 0:
-                                self.game.play_music(el.music_kick)
+                            el.hp_add(dmg=-int(self.damage))
+                            if el.hp >0:
+                                self.game.play_music(el.musik_kick)
                             self.remove()
                 elif el.name == 'Stone_1':
                     el_x, el_y = (el.position[0] - LEFT_MOVE) // PLAYER_SPEED, el.position[1] // PLAYER_SPEED
                     if self.direction != LOOK_UP:
                         if arrow_x == el_x and arrow_y == el_y:
-                            el.hp_add(-int(self.damage))
-                            if el.hp > 0:
+                            el.hp_add(dmg=-int(self.damage))
+                            if el.hp >0:
                                 self.game.play_music(STONE1_KICK_MUSIC)
                             self.remove()
                     else:
                         if arrow_x == el_x and arrow_y + 1 == el_y:
-                            el.hp_add(-int(self.damage))
-                            if el.hp > 0:
+                            el.hp_add(dmg=-int(self.damage))
+                            if el.hp >0:
                                 self.game.play_music(STONE1_KICK_MUSIC)
                             self.remove()
                 else:
                     el_x, el_y = (el.position[0] - LEFT_MOVE) // PLAYER_SPEED, el.position[1] // PLAYER_SPEED
                     if self.direction != LOOK_UP:
                         if arrow_x == el_x and arrow_y == el_y:
-                            el.hp_add(-int(self.damage))
+                            el.hp_add(dmg=-int(self.damage))
                             self.remove()
                     else:
                         if arrow_x == el_x and arrow_y + 1 == el_y:
-                            el.hp_add(-int(self.damage))
+                            el.hp_add(dmg=-int(self.damage))
                             self.remove()
+
 
     def remove(self):
         if self in self.game.projective:
@@ -151,7 +151,7 @@ class Tnt():
     
     def kill(self):
         if self in self.game.obj:
-            x, y = self.x, self.y
+            x,y = self.x, self.y
             destroy_pos = [[x, y - 1], [x + 1, y - 1], [x + 1, y], [x + 1, y + 1], [x, y + 1], [x - 1, y + 1], [x - 1, y], [x - 1, y - 1]]
             for el in self.game.obj:
             	if el.name == 'stone_1':
@@ -177,11 +177,11 @@ class Mob_ork():
         self.state = PLAYER_ALIVE
         self.x = x - 1
         self.y = y - 1
-        self.music_kick = ORK_KICK_MUSIC
-        self.music_death = ORK_DEATH_MUSIC
+        self.musik_kick = ORK_KICK_MUSIC
+        self.musik_deth = ORK_DEATH_MUSIC
         self.x, self.y = self.x * int(PLAYER_SPEED) + LEFT_MOVE, self.y * int(PLAYER_SPEED)
         self.name = name
-        self.position = [self.x, self.y]
+        self.position = [x - 1, y - 1]
         self.game = game
         self.image = [r'data/sprites/mobs/ork/ork_right_alive.png', r'data/sprites/mobs/ork/ork_right_shoot.png', r'data/sprites/mobs/ork/ork_down_alive.png', r'data/sprites/mobs/ork/ork_down_shoot.png', r'data/sprites/mobs/ork/ork_up_alive.png', r'data/sprites/mobs/ork/ork_up_shoot.png', r'data/sprites/mobs/ork/ork_dead.png']
         self.image = [pygame.image.load(elem) for elem in self.image]
@@ -248,7 +248,7 @@ class Mob_ork():
                 self.stop = 0
                 self.game.player.attacked = 0
             self.game.killed_obj.append(self)
-            self.game.play_music(self.music_death)
+            self.game.play_music(self.musik_deth)
 
     def contact_check(self, obj):
         res = False
@@ -298,99 +298,47 @@ class Mob_ork():
             else:
                 res = False
         return res
-    
-    def move_to_player(self, screen):
-        if self.game.game_stop == 0:
-            obj = self.game.obj
-            playerPos = self.game.player.position
-            x, y, xd, yd = False, False, False, False
-            self.attack()
-            if not self.contact_check(obj):
-                if self.stop == 0 and self.state != PLAYER_SHOOT:
-                    if self.position[1] < playerPos[1]:
-                        self.direction = LOOK_DOWN
-                        self.position[1] += 1
-                        if self.position[1] > 15 or self.position[1] < 0 or self.contact_check(obj):
-                            self.position[1] -= 1
-                            # L
-                            if self.position[0] <= 7:
-                                self.direction = LOOK_LEFT
-                                self.position[0] -= 1
-                                if self.position[0] > 21 or self.position[0] < 0 or self.contact_check(obj):
-                                    self.position[0] += 1
-                                else:
-                                    xd = True
-                                    self.move(screen, x, y, xd, yd)
-                            else:
-                                self.direction = LOOK_RIGHT
-                                self.position[0] += 1
-                                if self.position[0] > 21 or self.position[0] < 0 or self.contact_check(obj):
-                                    self.position[0] -= 1
-                                else:
-                                    x = True
-                                    self.move(screen, x, y, xd, yd)
-                        else:
-                            y = True
-                            self.move(screen, x, y, xd, yd)
-                    elif self.position[1] > playerPos[1]:
-                        self.direction = LOOK_UP
-                        self.position[1] -= 1
-                        if self.position[1] > 15 or self.position[1] < 0 or self.contact_check(obj):
-                            self.position[1] += 1
-                            if self.position[0] <= 7:
-                                self.direction = LOOK_LEFT
-                                self.position[0] -= 1
-                                if self.position[0] > 21 or self.position[0] < 0 or self.contact_check(obj):
-                                    self.position[0] += 1
-                                    
-                                else:
-                                    xd = True
-                                    self.move(screen, x, y, xd, yd)
-                            else:
-                                self.direction = LOOK_RIGHT
-                                self.position[0] += 1
-                                if self.position[0] > 21 or self.position[0] < 0 or self.contact_check(obj):
-                                    self.position[0] -= 1
-                                else:
-                                    x = True
-                                    self.move(screen, x, y, xd, yd)
-                        else:
-                            yd = True
-                            self.move(screen, x, y, xd, yd)
-                    else:
-                        if self.position[0] < playerPos[0]:
-                            self.direction = LOOK_RIGHT
-                            self.position[0] += 1
-                            if self.position[0] > 21 or self.position[0] < 0 or self.contact_check(obj):
-                                self.position[0] -= 1
-                                self.direction = LOOK_UP
-                                self.position[1] -= 1
-                                if self.position[1] > 15 or self.position[1] < 0 or self.contact_check(obj):
-                                    self.position[1] += 1
-                                else:
-                                    yd = True
-                                    self.move(screen, x, y, xd, yd)
-                            else:
-                                x = True
-                                self.move(screen, x, y, xd, yd)
-                        elif self.position[0] > playerPos[0]:
-                            self.direction = LOOK_LEFT
-                            self.position[0] -= 1
-                            if self.position[0] > 21 or self.position[0] < 0 or self.contact_check(obj):
-                                self.position[0] += 1
-                                self.direction = LOOK_UP
-                                self.position[1] -= 1
-                                if self.position[1] > 15 or self.position[1] < 0 or self.contact_check(obj):
-                                    self.position[1] += 1
-                                else:
-                                    yd = True
-                                    self.move(screen, x, y, xd, yd)
-                            else:
-                                xd = True
-                                self.move(screen, x, y, xd, yd)
-            else:
-                self.random_move()
 
+    def random_move(self, screen):
+        if self.game.game_stop == 0:
+            move = random.randint(0, 3)
+            obj = self.game.obj
+            x,y,xd,yd = False, False, False, False
+            self.attack()
+            if self.stop == 0 and self.state != PLAYER_SHOOT:
+                if move == 0:
+                    self.direction = LOOK_UP
+                    self.position[1] -= 1
+                    if self.position[1] > 15 or self.position[1] < 0 or self.contact_check(obj):
+                        self.position[1] += 1
+                    else:
+                        yd = True
+                        self.move(screen, x, y, xd, yd)
+                elif move == 1:
+                    self.direction = LOOK_DOWN
+                    self.position[1] += 1
+                    if self.position[1] > 15 or self.position[1] < 0 or self.contact_check(obj):
+                        self.position[1] -= 1
+                    else:
+                        y = True
+                        self.move(screen, x, y, xd, yd)
+                elif move == 2:
+                    self.direction = LOOK_RIGHT
+                    self.position[0] += 1
+                    if self.position[0] > 21 or self.position[0] < 0 or self.contact_check(obj):
+                        self.position[0] -= 1
+                    else:
+                        x = True
+                        self.move(screen, x, y, xd, yd)
+                elif move == 3:
+                    self.direction = LOOK_LEFT
+                    self.position[0] -= 1
+                    if self.position[0] > 21 or self.position[0] < 0 or self.contact_check(obj):
+                        self.position[0] += 1
+                    else:
+                        xd = True
+                        self.move(screen, x, y, xd, yd)
+    
     def attack(self):
         if self.game.game_stop == 0:
             if self.game.player.state != PLAYER_DEAD:
@@ -417,7 +365,7 @@ class Mob_ork():
                     else:
                         self.game.player.hp -= self.damage
                     res = True
-                elif pos_ork_x == pos_p_x and pos_ork_y + 1 == pos_p_y:
+                elif pos_ork_x == pos_p_x and pos_ork_y + 1== pos_p_y:
                     self.direction = LOOK_DOWN
                     if self.game.player in self.game.shelding:
                         self.game.play_music(SHELD)
@@ -462,12 +410,12 @@ class Mob_dragon():
         self.state = PLAYER_ALIVE
         self.x = x - 1
         self.y = y - 1
-        self.music_kick = DRAGON_KICK_MUSIC
-        self.music_death = DRAGON_DEATH_MUSIC
+        self.musik_kick = DRAGON_KICK_MUSIC
+        self.musik_deth = DRAGON_DEATH_MUSIC
         self.x, self.y = self.x * int(PLAYER_SPEED) + LEFT_MOVE, self.y * int(PLAYER_SPEED)
         self.name = 'Dragon'
         self.cell_size = PLAYER_SPEED
-        self.position = [self.x, self.y]
+        self.position = [x - 1, y - 1]
         self.game = game
         self.image = [r'data/sprites/mobs/dragon_green/r_a.png', r'data/sprites/mobs/dragon_green/r_s.png', r'data/sprites/mobs/dragon_green/d_a.png', r'data/sprites/mobs/dragon_green/d_s.png', r'data/sprites/mobs/dragon_green/u_a.png', r'data/sprites/mobs/dragon_green/u_s.png', r'data/sprites/mobs/dragon_green/dead.png']
         self.image = [pygame.image.load(elem) for elem in self.image]
@@ -534,7 +482,8 @@ class Mob_dragon():
                 self.stop = 0
                 self.game.player.attacked = 0
             self.game.killed_obj.append(self)
-            self.game.play_music(self.music_death)
+            self.game.play_music(self.musik_deth)
+
 
     def contact_check(self, obj):
         res = False
@@ -561,7 +510,7 @@ class Mob_dragon():
                 else:
                     res = False
             elif self.direction == LOOK_UP:
-                if self.position[0] == el_x and self.position[1] == el_y:
+                if self.position[0] == el_x and self.position[1]  == el_y:
                     return True
                 else:
                     res = False
@@ -587,97 +536,45 @@ class Mob_dragon():
                 res = False
         return res
 
-    def move_to_player(self, screen):
+    def random_move(self, screen):
         if self.game.game_stop == 0:
+            move = random.randint(0, 3)
             obj = self.game.obj
-            playerPos = self.game.player.position
-            x, y, xd, yd = False, False, False, False
+            x,y,xd,yd = False, False, False, False
             self.attack()
-            if not self.contact_check():
-                if self.stop == 0 and self.state != PLAYER_SHOOT:
-                    if self.position[1] < playerPos[1]:
-                        self.direction = LOOK_DOWN
+            if self.stop == 0 and self.state != PLAYER_SHOOT:
+                if move == 0:
+                    self.direction = LOOK_UP
+                    self.position[1] -= 1
+                    if self.position[1] > 15 or self.position[1] < 0 or self.contact_check(obj):
                         self.position[1] += 1
-                        if self.position[1] > 15 or self.position[1] < 0 or self.contact_check(obj):
-                            self.position[1] -= 1
-                            # L
-                            if self.position[0] <= 7:
-                                self.direction = LOOK_LEFT
-                                self.position[0] -= 1
-                                if self.position[0] > 21 or self.position[0] < 0 or self.contact_check(obj):
-                                    self.position[0] += 1
-                                else:
-                                    xd = True
-                                    self.move(screen, x, y, xd, yd)
-                            else:
-                                self.direction = LOOK_RIGHT
-                                self.position[0] += 1
-                                if self.position[0] > 21 or self.position[0] < 0 or self.contact_check(obj):
-                                    self.position[0] -= 1
-                                else:
-                                    x = True
-                                    self.move(screen, x, y, xd, yd)
-                        else:
-                            y = True
-                            self.move(screen, x, y, xd, yd)
-                    elif self.position[1] > playerPos[1]:
-                        self.direction = LOOK_UP
-                        self.position[1] -= 1
-                        if self.position[1] > 15 or self.position[1] < 0 or self.contact_check(obj):
-                            self.position[1] += 1
-                            if self.position[0] <= 7:
-                                self.direction = LOOK_LEFT
-                                self.position[0] -= 1
-                                if self.position[0] > 21 or self.position[0] < 0 or self.contact_check(obj):
-                                    self.position[0] += 1
-                                    
-                                else:
-                                    xd = True
-                                    self.move(screen, x, y, xd, yd)
-                            else:
-                                self.direction = LOOK_RIGHT
-                                self.position[0] += 1
-                                if self.position[0] > 21 or self.position[0] < 0 or self.contact_check(obj):
-                                    self.position[0] -= 1
-                                else:
-                                    x = True
-                                    self.move(screen, x, y, xd, yd)
-                        else:
-                            yd = True
-                            self.move(screen, x, y, xd, yd)
                     else:
-                        if self.position[0] < playerPos[0]:
-                            self.direction = LOOK_RIGHT
-                            self.position[0] += 1
-                            if self.position[0] > 21 or self.position[0] < 0 or self.contact_check(obj):
-                                self.position[0] -= 1
-                                self.direction = LOOK_UP
-                                self.position[1] -= 1
-                                if self.position[1] > 15 or self.position[1] < 0 or self.contact_check(obj):
-                                    self.position[1] += 1
-                                else:
-                                    yd = True
-                                    self.move(screen, x, y, xd, yd)
-                            else:
-                                x = True
-                                self.move(screen, x, y, xd, yd)
-                        elif self.position[0] > playerPos[0]:
-                            self.direction = LOOK_LEFT
-                            self.position[0] -= 1
-                            if self.position[0] > 21 or self.position[0] < 0 or self.contact_check(obj):
-                                self.position[0] += 1
-                                self.direction = LOOK_UP
-                                self.position[1] -= 1
-                                if self.position[1] > 15 or self.position[1] < 0 or self.contact_check(obj):
-                                    self.position[1] += 1
-                                else:
-                                    yd = True
-                                    self.move(screen, x, y, xd, yd)
-                            else:
-                                xd = True
-                                self.move(screen, x, y, xd, yd)
-            else:
-                self.random_move()
+                        yd = True
+                        self.move(screen, x, y, xd, yd)
+                elif move == 1:
+                    self.direction = LOOK_DOWN
+                    self.position[1] += 1
+                    if self.position[1] > 15 or self.position[1] < 0 or self.contact_check(obj):
+                        self.position[1] -= 1
+                    else:
+                        y = True
+                        self.move(screen, x, y, xd, yd)
+                elif move == 2:
+                    self.direction = LOOK_RIGHT
+                    self.position[0] += 1
+                    if self.position[0] > 21 or self.position[0] < 0 or self.contact_check(obj):
+                        self.position[0] -= 1
+                    else:
+                        x = True
+                        self.move(screen, x, y, xd, yd)
+                elif move == 3:
+                    self.direction = LOOK_LEFT
+                    self.position[0] -= 1
+                    if self.position[0] > 21 or self.position[0] < 0 or self.contact_check(obj):
+                        self.position[0] += 1
+                    else:
+                        xd = True
+                        self.move(screen, x, y, xd, yd)
     
     def attack(self):
         if self.game.game_stop == 0:
@@ -685,21 +582,21 @@ class Mob_dragon():
                 res = False
                 pos = self.position
                 x,y = self.position[0], self.position[1]
-                if self.game.player.position in [[x - 1, y], [x - 2, y], [x - 3, y], [x - 4, y], [x - 5, y], [x - 6, y], [x - 7, y]]:
+                if self.game.player.position in [[x-1, y], [x-2, y], [x-3, y], [x-4, y], [x-5, y], [x-6, y], [x-7, y]]:
                     self.direction = LOOK_LEFT
-                    self.game.projective.append(Fireball(self.screen, self.x + 7, self.y + self.cell_size // 2, self.direction, self.game, pos, 6000, self))
+                    self.game.projective.append(Fireball(screen=self.screen, x=self.x + 7, y=self.y + self.cell_size//2, direction=self.direction, game=self.game, position=pos, dmg=6000, owner=self))
                     res = True
-                elif self.game.player.position in [[x + 1, y], [x + 2, y], [x + 3, y], [x + 4, y], [x + 5, y], [x + 6, y], [x + 7, y]]:
+                elif self.game.player.position in [[x+1, y], [x+2, y], [x+3, y], [x+4, y], [x+5, y], [x+6, y], [x+7, y]]:
                     self.direction = LOOK_RIGHT
-                    self.game.projective.append(Fireball(self.screen, self.x + 7, self.y + self.cell_size // 2, self.direction, self.game, pos, 6000, self))
+                    self.game.projective.append(Fireball(screen=self.screen, x=self.x + 7, y=self.y + self.cell_size // 2, direction=self.direction, game=self.game, position=pos, dmg=6000, owner=self))
                     res = True
-                elif self.game.player.position in [[x, y - 1], [x, y - 2], [x, y - 3], [x, y - 4], [x, y - 5], [x, y - 6], [x, y - 7]]:
+                elif self.game.player.position in [[x, y-1], [x, y-2], [x, y-3], [x, y-4], [x, y-5], [x, y-6], [x, y-7]]:
                     self.direction = LOOK_UP
-                    self.game.projective.append(Fireball(self.screen, self.x + self.cell_size // 2 - 4, self.y - 7, self.direction, self.game, pos, 6000, self))
+                    self.game.projective.append(Fireball(screen=self.screen, x=self.x + self.cell_size // 2 - 4, y=self.y - 7, direction=self.direction, game=self.game, position=pos, dmg=6000, owner=self))
                     res = True
-                elif self.game.player.position in [[x, y + 1], [x, y + 2], [x, y + 3], [x, y + 4], [x, y + 5], [x, y + 6], [x, y + 7]]:
+                elif self.game.player.position in [[x, y+1], [x, y+2], [x, y+3], [x, y+4], [x, y+5], [x, y+6], [x, y+7]]:
                     self.direction = LOOK_DOWN
-                    self.game.projective.append(Fireball(self.screen, self.x + self.cell_size // 2 - 4, self.y + 7, self.direction, self.game, pos, 6000, self))
+                    self.game.projective.append(Fireball(screen=self.screen, x=self.x + self.cell_size // 2 - 4, y=self.y + 7, direction=self.direction, game=self.game, position=pos, dmg=6000, owner=self))
                     res = True
                 if self.attack_1():
                     self.state = PLAYER_SHOOT
@@ -714,13 +611,13 @@ class Mob_dragon():
     def attack_1(self):
         res = False
         x, y = self.position[0], self.position[1]
-        if self.game.player.position in [[x - 1, y], [x - 2, y], [x - 3, y], [x - 4, y], [x - 5, y], [x - 6, y], [x - 7, y]]:
+        if self.game.player.position in [[x-1, y], [x-2, y], [x-3, y], [x-4, y], [x-5, y], [x-6, y], [x-7, y]]:
             res = True
-        elif self.game.player.position in [[x + 1, y], [x + 2, y], [x + 3, y], [x + 4, y], [x + 5, y], [x + 6, y], [x + 7, y]]:
+        elif self.game.player.position in [[x+1, y], [x+2, y], [x+3, y], [x+4, y], [x+5, y], [x+6, y], [x+7, y]]:
             res = True
-        elif self.game.player.position in [[x, y - 1], [x, y - 2], [x, y - 3], [x, y - 4], [x, y - 5], [x, y - 6], [x, y - 7]]:
+        elif self.game.player.position in [[x, y-1], [x, y-2], [x, y-3], [x, y-4], [x, y-5], [x, y-6], [x, y-7]]:
             res = True
-        elif self.game.player.position in [[x, y + 1], [x, y + 2], [x, y + 3], [x, y + 4], [x, y + 5], [x, y + 6], [x, y + 7]]:
+        elif self.game.player.position in [[x, y+1], [x, y+2], [x, y+3], [x, y+4], [x, y+5], [x, y+6], [x, y+7]]:
             res = True
         return res
 
@@ -732,11 +629,11 @@ class Mob_ork_boss():
         self.state = PLAYER_ALIVE
         self.x = x - 1
         self.y = y - 1
-        self.music_kick = ORK_KICK_MUSIC
-        self.music_death = ORK_DEATH_MUSIC
+        self.musik_kick = ORK_KICK_MUSIC
+        self.musik_deth = ORK_DEATH_MUSIC
         self.x, self.y = self.x * int(PLAYER_SPEED) + LEFT_MOVE, self.y * int(PLAYER_SPEED)
         self.name = name
-        self.position = [self.x, self.y]
+        self.position = [x - 1, y - 1]
         self.game = game
         self.image = [r'data/sprites/mobs/ork/ork_right_alive.png', r'data/sprites/mobs/ork/ork_right_shoot.png', r'data/sprites/mobs/ork/ork_down_alive.png', r'data/sprites/mobs/ork/ork_down_shoot.png', r'data/sprites/mobs/ork/ork_up_alive.png', r'data/sprites/mobs/ork/ork_up_shoot.png', r'data/sprites/mobs/ork/ork_dead.png']
         self.image = [pygame.image.load(elem) for elem in self.image]
@@ -803,7 +700,7 @@ class Mob_ork_boss():
                 self.stop = 0
                 self.game.player.attacked = 0
             self.game.killed_obj.append(self)
-            self.game.play_music(self.music_death)
+            self.game.play_music(self.musik_deth)
             pygame.mixer.music.stop()
 
     def contact_check(self, obj):
@@ -856,97 +753,45 @@ class Mob_ork_boss():
                     res = False
             return res
 
-    def move_to_player(self, screen):
+    def random_move(self, screen):
         if self.game.game_stop == 0:
+            move = random.randint(0, 3)
             obj = self.game.obj
-            playerPos = self.game.player.position
-            x, y, xd, yd = False, False, False, False
+            x,y,xd,yd = False, False, False, False
             self.attack()
-            if not self.contact_check():
-                if self.stop == 0 and self.state != PLAYER_SHOOT:
-                    if self.position[1] < playerPos[1]:
-                        self.direction = LOOK_DOWN
+            if self.stop == 0 and self.state != PLAYER_SHOOT:
+                if move == 0:
+                    self.direction = LOOK_UP
+                    self.position[1] -= 1
+                    if self.position[1] > 15 or self.position[1] < 0 or self.contact_check(obj):
                         self.position[1] += 1
-                        if self.position[1] > 15 or self.position[1] < 0 or self.contact_check(obj):
-                            self.position[1] -= 1
-                            # L
-                            if self.position[0] <= 7:
-                                self.direction = LOOK_LEFT
-                                self.position[0] -= 1
-                                if self.position[0] > 21 or self.position[0] < 0 or self.contact_check(obj):
-                                    self.position[0] += 1
-                                else:
-                                    xd = True
-                                    self.move(screen, x, y, xd, yd)
-                            else:
-                                self.direction = LOOK_RIGHT
-                                self.position[0] += 1
-                                if self.position[0] > 21 or self.position[0] < 0 or self.contact_check(obj):
-                                    self.position[0] -= 1
-                                else:
-                                    x = True
-                                    self.move(screen, x, y, xd, yd)
-                        else:
-                            y = True
-                            self.move(screen, x, y, xd, yd)
-                    elif self.position[1] > playerPos[1]:
-                        self.direction = LOOK_UP
-                        self.position[1] -= 1
-                        if self.position[1] > 15 or self.position[1] < 0 or self.contact_check(obj):
-                            self.position[1] += 1
-                            if self.position[0] <= 7:
-                                self.direction = LOOK_LEFT
-                                self.position[0] -= 1
-                                if self.position[0] > 21 or self.position[0] < 0 or self.contact_check(obj):
-                                    self.position[0] += 1
-                                    
-                                else:
-                                    xd = True
-                                    self.move(screen, x, y, xd, yd)
-                            else:
-                                self.direction = LOOK_RIGHT
-                                self.position[0] += 1
-                                if self.position[0] > 21 or self.position[0] < 0 or self.contact_check(obj):
-                                    self.position[0] -= 1
-                                else:
-                                    x = True
-                                    self.move(screen, x, y, xd, yd)
-                        else:
-                            yd = True
-                            self.move(screen, x, y, xd, yd)
                     else:
-                        if self.position[0] < playerPos[0]:
-                            self.direction = LOOK_RIGHT
-                            self.position[0] += 1
-                            if self.position[0] > 21 or self.position[0] < 0 or self.contact_check(obj):
-                                self.position[0] -= 1
-                                self.direction = LOOK_UP
-                                self.position[1] -= 1
-                                if self.position[1] > 15 or self.position[1] < 0 or self.contact_check(obj):
-                                    self.position[1] += 1
-                                else:
-                                    yd = True
-                                    self.move(screen, x, y, xd, yd)
-                            else:
-                                x = True
-                                self.move(screen, x, y, xd, yd)
-                        elif self.position[0] > playerPos[0]:
-                            self.direction = LOOK_LEFT
-                            self.position[0] -= 1
-                            if self.position[0] > 21 or self.position[0] < 0 or self.contact_check(obj):
-                                self.position[0] += 1
-                                self.direction = LOOK_UP
-                                self.position[1] -= 1
-                                if self.position[1] > 15 or self.position[1] < 0 or self.contact_check(obj):
-                                    self.position[1] += 1
-                                else:
-                                    yd = True
-                                    self.move(screen, x, y, xd, yd)
-                            else:
-                                xd = True
-                                self.move(screen, x, y, xd, yd)
-            else:
-                self.random_move()
+                        yd = True
+                        self.move(screen, x, y, xd, yd)
+                elif move == 1:
+                    self.direction = LOOK_DOWN
+                    self.position[1] += 1
+                    if self.position[1] > 15 or self.position[1] < 0 or self.contact_check(obj):
+                        self.position[1] -= 1
+                    else:
+                        y = True
+                        self.move(screen, x, y, xd, yd)
+                elif move == 2:
+                    self.direction = LOOK_RIGHT
+                    self.position[0] += 1
+                    if self.position[0] > 21 or self.position[0] < 0 or self.contact_check(obj):
+                        self.position[0] -= 1
+                    else:
+                        x = True
+                        self.move(screen, x, y, xd, yd)
+                elif move == 3:
+                    self.direction = LOOK_LEFT
+                    self.position[0] -= 1
+                    if self.position[0] > 21 or self.position[0] < 0 or self.contact_check(obj):
+                        self.position[0] += 1
+                    else:
+                        xd = True
+                        self.move(screen, x, y, xd, yd)
         
     def attack(self):
         if self.game.game_stop == 0:

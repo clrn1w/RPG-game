@@ -7,9 +7,8 @@ from modules.classes import *
 from modules.chests import * 
 from modules.levels import *
 
-
 class Fireball():
-    def __init__(self, screen, game, x, y, direction, position, dmg, owner):
+    def __init__(self, screen,game, x, y, direction, position, dmg, owner):
         self.direction = direction
         self.game = game
         self.owner = owner
@@ -49,7 +48,7 @@ class Fireball():
             self.y -= self.speed
         if self.contact_check(self.game.obj):
             self.remove()
-        if self.x <= LEFT_MOVE or self.x >= LEFT_MOVE + PLAYER_SPEED * 22 or self.y <= (0) or self.y >= (PLAYER_SPEED * 16 - PLAYER_SPEED * 0.2):
+        if self.x <= LEFT_MOVE or self.x >= LEFT_MOVE + PLAYER_SPEED * 22 or self.y <= (0) or self.y >= (PLAYER_SPEED * 16 - PLAYER_SPEED*0.2):
                 self.remove()
     
     def contact_check(self, obj):
@@ -61,12 +60,12 @@ class Fireball():
                     if self.direction != LOOK_UP:
                         if arrow_x == el_x and arrow_y == el_y:
                             if el == self.game.player and el in self.game.shelding:
-                                el.hp_add(-int(self.damage * 0.4))
-                                if el.hp > 0:
+                                el.hp_add(dmg=-int(self.damage * 0.4))
+                                if el.hp >0:
                                     self.game.play_music(SHELD)
                                     pygame.mixer.music.stop()
                             else:
-                                el.hp_add(-int(self.damage))
+                                el.hp_add(dmg=-int(self.damage))
                                 if el.hp >0:
                                     self.game.play_music(PLAYER_KICK_MUSIC)
                                     pygame.mixer.music.stop()
@@ -74,12 +73,12 @@ class Fireball():
                     else:
                         if arrow_x == el_x and arrow_y + 1 == el_y:
                             if el == self.game.player and el in self.game.shelding:
-                                el.hp_add(-int(self.damage * 0.4))
+                                el.hp_add(dmg=-int(self.damage * 0.4))
                                 if el.hp >0:
                                     self.game.play_music(SHELD)
                                     pygame.mixer.music.stop()
                             else:
-                                el.hp_add(-int(self.damage))
+                                el.hp_add(dmg=-int(self.damage))
                                 if el.hp >0:
                                     self.game.play_music(PLAYER_KICK_MUSIC)
                                     pygame.mixer.music.stop()
@@ -92,9 +91,9 @@ class Fireball():
                                 self.game.play_music(SHELD)
                                 pygame.mixer.music.stop()
                             else:
-                                el.hp_add(-int(self.damage))
-                                if el.hp > 0:
-                                    self.game.play_music(el.music_kick)
+                                el.hp_add(dmg=-int(self.damage))
+                                if el.hp >0:
+                                    self.game.play_music(el.musik_kick)
                                     pygame.mixer.music.stop()
                             self.remove()
                     else:
@@ -103,24 +102,24 @@ class Fireball():
                                 self.game.play_music(SHELD)
                                 pygame.mixer.music.stop()
                             else:
-                                el.hp_add(-int(self.damage))
-                                if el.hp > 0:
-                                    el.music_kick.play()
+                                el.hp_add(dmg=-int(self.damage))
+                                if el.hp >0:
+                                    el.musik_kick.play()
                                     pygame.mixer.music.stop()
                             self.remove()
                 elif el.name == 'Stone_1':
                     el_x, el_y = (el.position[0] - LEFT_MOVE) // PLAYER_SPEED, el.position[1] // PLAYER_SPEED
                     if self.direction != LOOK_UP:
                         if arrow_x == el_x and arrow_y == el_y:
-                            el.hp_add(-int(self.damage))
-                            if el.hp > 0:
+                            el.hp_add(dmg=-int(self.damage))
+                            if el.hp >0:
                                 self.game.play_music(STONE1_KICK_MUSIC)
                                 pygame.mixer.music.stop()
                             self.remove()
                     else:
                         if arrow_x == el_x and arrow_y + 1 == el_y:
-                            el.hp_add(-int(self.damage))
-                            if el.hp > 0:
+                            el.hp_add(dmg=-int(self.damage))
+                            if el.hp >0:
                                 self.game.play_music(STONE1_KICK_MUSIC)
                                 pygame.mixer.music.stop()
                             self.remove()
@@ -128,7 +127,7 @@ class Fireball():
                     el_x, el_y = (el.position[0] - LEFT_MOVE) // PLAYER_SPEED, el.position[1] // PLAYER_SPEED
                     if self.direction != LOOK_UP:
                         if arrow_x == el_x and arrow_y == el_y:
-                            el.hp_add(-int(self.damage))
+                            el.hp_add(dmg=-int(self.damage))
                             self.remove()
                     else:
                         if arrow_x == el_x and arrow_y + 1 == el_y:
@@ -141,7 +140,7 @@ class Fireball():
 
 
 class Fire_arrow():
-    def __init__(self, screen, game, x, y, direction, position, dmg, owner):
+    def __init__(self, screen,game, x, y, direction, position, dmg, owner):
         self.direction = direction
         self.game = game
         self.owner = owner
@@ -173,7 +172,7 @@ class Fire_arrow():
             self.y -= self.speed
         if self.contact_check(self.game.obj):
             self.remove()
-        if self.x <= LEFT_MOVE or self.x >= LEFT_MOVE + PLAYER_SPEED * 22 or self.y <= (0) or self.y >= (PLAYER_SPEED * 16 - PLAYER_SPEED * 0.2):
+        if self.x <= LEFT_MOVE or self.x >= LEFT_MOVE + PLAYER_SPEED * 22 or self.y <= (0) or self.y >= (PLAYER_SPEED * 16 - PLAYER_SPEED*0.2):
                 self.remove()
     
     def contact_check(self, obj):
@@ -187,9 +186,9 @@ class Fire_arrow():
                             if el in self.game.shelding:
                                 self.game.play_music(SHELD)
                             else:
-                                el.hp_add(-int(self.damage))
-                                if el.hp > 0:
-                                    self.game.play_music(el.music_kick)
+                                el.hp_add(dmg=-int(self.damage))
+                                if el.hp >0:
+                                    self.game.play_music(el.musik_kick)
                                     pygame.mixer.music.stop()
                                 print('damaged')
                             self.remove()
@@ -198,9 +197,9 @@ class Fire_arrow():
                             if el in self.game.shelding:
                                 self.game.play_music(SHELD)
                             else:
-                                el.hp_add(-int(self.damage))
-                                if el.hp > 0:
-                                    self.game.play_music(el.music_kick)
+                                el.hp_add(dmg=-int(self.damage))
+                                if el.hp >0:
+                                    self.game.play_music(el.musik_kick)
                                     pygame.mixer.music.stop()
                             self.remove()
                 elif el.name == 'Stone_1':
@@ -246,7 +245,7 @@ class Fire_arrow():
 class Sheld():
     def __init__(self, screen, game, owner):
         self.timer = 100
-        self.count = 40
+        self.conut = 40
         self.cd = 300
         self.image = pygame.image.load(r'data/sprites/player/Sheld.png')
         self.owner = owner

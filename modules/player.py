@@ -99,7 +99,7 @@ class Player():
                 else:
                     res = False
             elif self.direction == LOOK_UP:
-                if self.position[0] == el_x and self.position[1] == el_y:
+                if self.position[0] == el_x and self.position[1]  == el_y:
                     return True
                 else:
                     res = False
@@ -110,6 +110,7 @@ class Player():
             self.state = PLAYER_DEAD
             self.game.play_music(PLAYER_DEATH_MUSIC)
             pygame.mixer.music.pause()
+            self.game.game_stop = 0
 
     def hp_add(self, dmg):
         self.hp += dmg
