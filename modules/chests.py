@@ -28,7 +28,7 @@ class Chest_1_lvl():
         self.item_add()
     
     def item_add(self):
-        items = [['Chitaury', AMULET, 100, -20, 0, 0], ['Lopitoko', AMULET, 0, 0, 40, 100]]
+        items = [['Chitaury', AMULET, 100, -20, 0, 0], ['Magic amulet', AMULET, 0, 0, 40, 100], ['Elven Bow', WEAR, 0, 0, 60, 160], ['Heart of Dragon', ITEMS, 150, 20, 0, 0]]
         random_count = random.randint(0, len(items) - 1)
         self.items.append(items[random_count])
     

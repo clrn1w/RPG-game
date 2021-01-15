@@ -110,7 +110,7 @@ class Player():
             self.state = PLAYER_DEAD
             self.game.play_music(PLAYER_DEATH_MUSIC)
             pygame.mixer.music.pause()
-            self.game.game_stop = 0
+
 
     def hp_add(self, dmg):
         self.hp += dmg

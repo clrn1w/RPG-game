@@ -37,6 +37,7 @@ class Main():
         try:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
+                    self.game_stop = 0
                     self.running = False
                 elif event.type == USEREVENT + 1 and self.game_stop == 0:
                     self.player.state = PLAYER_ALIVE
@@ -175,6 +176,8 @@ class Main():
                                                     self.player.fire_arrow_dmg += item[5] 
                                                     self.play_music(CHEST_OPEN)
                                                     pygame.mixer.music.stop()
+                                                    self.game_stop = 1
+                                                    self.new_item(item)
                                 elif self.player.direction == LOOK_DOWN:
                                     for el in self.obj:
                                         if el.name == 'Chest' and el.state == 0:
@@ -190,6 +193,9 @@ class Main():
                                                     self.player.fire_arrow_dmg += item[5] 
                                                     self.play_music(CHEST_OPEN)
                                                     pygame.mixer.music.stop()
+                                                    self.game_stop = 1
+                                                    self.new_item(item)
+
                                 elif self.player.direction == LOOK_LEFT:
                                     for el in self.obj:
                                         if el.name == 'Chest' and el.state == 0:
@@ -205,6 +211,8 @@ class Main():
                                                     self.player.fire_arrow_dmg += item[5]
                                                     self.play_music(CHEST_OPEN)
                                                     pygame.mixer.music.stop()
+                                                    self.game_stop = 1
+                                                    self.new_item(item)
                                 elif self.player.direction == LOOK_UP:
                                     for el in self.obj:
                                         if el.name == 'Chest' and el.state == 0:
@@ -220,6 +228,8 @@ class Main():
                                                     self.player.fire_arrow_dmg += item[5] 
                                                     self.play_music(CHEST_OPEN)
                                                     pygame.mixer.music.stop()
+                                                    self.game_stop = 1
+                                                    self.new_item(item)
                         if event.key == pygame.K_r:
                             self.running = False
                             game = Main(self.screen)
@@ -387,8 +397,10 @@ class Main():
                         if arr_c == 3:
                             pass
                         if arr_c == 2:
+                            self.music.stop()
                             self.settings()
                         if arr_c == 1:
+                            self.music.stop()
                             self.choice_level()
                         if arr_c == 0:
                             self.show = False
@@ -479,8 +491,10 @@ class Main():
             pygame.display.update()
 
     def pause(self):
-        arr_c = 4
+        arr_c = 5
         self.show = True
+        back_ground_pause = pygame.image.load('data/sprites/pause.png')
+        back_ground_pause = pygame.transform.scale(back_ground_pause, (SCREEN_WIDTH//6, SCREEN_HEIGHT//3))
         font = pygame.font.SysFont('comicsansms', 35)
         menu_background = pygame.image.load('data/sprites/main_menu.png')
         arr =  pygame.image.load('data/sprites/choice.png')
@@ -488,12 +502,18 @@ class Main():
         menu_background = pygame.transform.scale(menu_background, (SCREEN_WIDTH, SCREEN_HEIGHT))
         arr = pygame.transform.scale(arr, (SCREEN_WIDTH // 3, SCREEN_HEIGHT // 3))
         m_1 = font.render("Continue", True, (255, 255, 255))
+        m_2 = font.render("Main Menu", True, (0, 128, 0))
         m_3 = font.render("Settings", True, (0, 128, 0))
         m_4 = font.render("Quit", True, (255, 0, 0))
-
-        self.screen.blit(menu_background, (0, 0))
+        self.music = pygame.mixer.Sound(r'data/music/main_menu2.mp3')
+        musix_play = 0
+        self.music.play()
+        self.music.set_volume(0.5)
+        self.screen.blit(menu_background, (0,0))
+        self.screen.blit(back_ground_pause, ((SCREEN_WIDTH // 2.5 - 65), (SCREEN_HEIGHT//1.65-60*5-50)))
         while self.show:
-            self.screen.blit(m_1, (SCREEN_WIDTH // 2.5, SCREEN_HEIGHT//1.65-60*4))
+            self.screen.blit(m_1, (SCREEN_WIDTH // 2.5, SCREEN_HEIGHT//1.65-60*5))
+            self.screen.blit(m_2, (SCREEN_WIDTH // 2.5, SCREEN_HEIGHT//1.65-60*4))
             self.screen.blit(m_3, (SCREEN_WIDTH // 2.5, SCREEN_HEIGHT//1.65-60*3))
             self.screen.blit(m_4, (SCREEN_WIDTH // 2.5, SCREEN_HEIGHT//1.65-60*2))
             for event in pygame.event.get():
@@ -505,35 +525,135 @@ class Main():
                         self.show = False
                     elif event.key == pygame.K_DOWN and arr_c > 1:
                         arr_c -= 1
-                    elif event.key == pygame.K_UP and arr_c < 4:
+                    elif event.key == pygame.K_UP and arr_c < 5:
                         arr_c += 1
                     elif event.key == 13:
-                        if arr_c == 4:
+                        if arr_c == 5:
                             self.show = False
                             self.game_stop = 0
+                            self.music.stop()
+                        elif arr_c == 4:
+                            self.music.stop()
+                            self.show = False
+                            self.running = False
+                            game = Main(self.screen)
                         if arr_c == 3:
+                            self.music.stop()
                             self.settings(True)
                         if arr_c == 2:
                             self.show = False
+                            self.music.stop()
                             self.running = False
                     elif event.key == pygame.K_ESCAPE:
                             self.show = False
+                            self.music.stop()
                             self.game_stop = 0
-                if arr_c == 4:
+                if arr_c == 5:
                     m_1 = font.render("Continue", True, (255, 255, 255))
+                    m_2 = font.render("Main Menu", True, (0, 128, 0))
+                    m_3 = font.render("Settings", True, (0, 128, 0))
+                    m_4 = font.render("Quit", True, (255, 0, 0))
+                elif arr_c == 4:
+                    m_1 = font.render("Continue", True, (0, 128, 0))
+                    m_2 = font.render("Main Menu", True, (255, 255, 255))
                     m_3 = font.render("Settings", True, (0, 128, 0))
                     m_4 = font.render("Quit", True, (255, 0, 0))
                 elif arr_c == 3:
                     m_1 = font.render("Continue", True, (0, 128, 0))
+                    m_2 = font.render("Main Menu", True, (0, 128, 0))
                     m_3 = font.render("Settings", True, (255, 255, 255))
                     m_4 = font.render("Quit", True, (255, 0, 0))
                 elif arr_c == 2:
                     m_1 = font.render("Continue", True, (0, 128, 0))
+                    m_2 = font.render("Main Menu", True, (0, 128, 0))
                     m_3 = font.render("Settings", True, (0, 128, 0))
                     m_4 = font.render("Quit", True, (255, 255, 255))
             
             pygame.display.update()
             
+    def game_over(self):
+        img = pygame.image.load('data/sprites/you_dead.jpg')
+        img = pygame.transform.scale(img, (SCREEN_WIDTH, SCREEN_HEIGHT))
+        self.game_stop = 2
+        x = -SCREEN_WIDTH
+        while x < 0:
+            x += 2
+            if self.game_stop == 2:
+                self.screen.blit(img, (x, 0))
+                pygame.display.flip()
+                self.event_loop()
+        import time
+        time.sleep(0.5)
+        self.running = False
+        game = Main(self.screen)
+
+
+    def new_item(self, item):
+        arr_c = 1
+        font = pygame.font.SysFont('comicsansms', 35)
+        item_name = item[0]
+        item_type = ['Poison', 'Amulet', 'Wear', 'Item'][item[1]-1]
+        item_mp_bonus = item[2]
+        item_hp_bonus = item[3]
+        item_arr_damage_bonus = item[4]
+        item_skill_bonus = item[5]
+        text_1 = font.render("New Item:", True, (255, 215, 0))
+        text_item_name = font.render(f"{item_name}", True, (255, 255, 255))
+        text_item_mp_bonus = font.render(f"{item_mp_bonus}", True, (255, 0, 0))
+        text_item_hp_bonus = font.render(f"{item_hp_bonus}", True, (255, 0, 0))
+        text_item_arr_damage_bonus = font.render(f"{item_arr_damage_bonus}", True, (255, 0, 0))
+        text_item_skill_bonus = font.render(f"{item_skill_bonus}", True, (255, 0, 0))
+
+        text_mp_bonus = font.render(f"Mana Bonus:", True, (177, 179, 177))
+        text_hp_bonus = font.render(f"HP Bonus:", True, (177, 179, 177))
+        text_arr_damage_bonus = pygame.font.SysFont('comicsansms', 25).render(f"Arrow DMG Bonus:", True, (177, 179, 177))
+        text_skill_bonus = pygame.font.SysFont('comicsansms', 20).render(f"Fire Arrow DMG Bonus:", True, (177, 179, 177))
+        if item_mp_bonus >= 0:
+            text_item_mp_bonus = font.render(f"+{item_mp_bonus}", True, (0, 255, 0))
+        if item_hp_bonus >= 0:
+            text_item_hp_bonus = font.render(f"+{item_hp_bonus}", True, (0, 255, 0))
+        if item_arr_damage_bonus >= 0:
+            text_item_arr_damage_bonus = font.render(f"+{item_arr_damage_bonus}", True, (0, 255, 0))
+        if item_skill_bonus >= 0:
+            text_item_skill_bonus = font.render(f"+{item_skill_bonus}", True, (0, 255, 0))
+        
+        print(item)
+        self.show = True
+        back_ground_pause = pygame.image.load('data/sprites/pause.png')
+        back_ground_pause = pygame.transform.scale(back_ground_pause, (SCREEN_WIDTH // 3, SCREEN_HEIGHT//2))
+        m_1 = font.render("Ok", True, (255, 255, 255))
+        self.screen.blit(back_ground_pause, ((SCREEN_WIDTH // 3), (SCREEN_HEIGHT//1.65-60*5-50)))
+        while self.show:
+            self.screen.blit(m_1, (LEFT_MOVE + PLAYER_SPEED*13.5, PLAYER_SPEED*11.5))
+            self.screen.blit(text_1, (LEFT_MOVE + PLAYER_SPEED*9.5, PLAYER_SPEED*5))
+            self.screen.blit(text_item_name, (LEFT_MOVE + PLAYER_SPEED*7.5, PLAYER_SPEED*5.9))
+            self.screen.blit(text_item_mp_bonus, (LEFT_MOVE + PLAYER_SPEED*11, PLAYER_SPEED*8.5))
+            self.screen.blit(text_item_hp_bonus, (LEFT_MOVE + PLAYER_SPEED*11, PLAYER_SPEED*7.5))
+            self.screen.blit(text_item_arr_damage_bonus, (LEFT_MOVE + PLAYER_SPEED*11.4, PLAYER_SPEED*9.5))
+            self.screen.blit(text_item_skill_bonus, (LEFT_MOVE + PLAYER_SPEED*11.4, PLAYER_SPEED*10.5))
+            
+            self.screen.blit(text_mp_bonus, (LEFT_MOVE + PLAYER_SPEED*7, PLAYER_SPEED*8.5))
+            self.screen.blit(text_hp_bonus, (LEFT_MOVE + PLAYER_SPEED*7, PLAYER_SPEED*7.5))
+            self.screen.blit(text_arr_damage_bonus, (LEFT_MOVE + PLAYER_SPEED*7, PLAYER_SPEED*9.7))
+            self.screen.blit(text_skill_bonus, (LEFT_MOVE + PLAYER_SPEED*7, PLAYER_SPEED*10.7))
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    self.show = False
+                    self.running = False
+                elif event.type == pygame.KEYDOWN:
+                    if event.key == 13:
+                        if arr_c == 1:
+                            self.show = False
+                            self.game_stop = 0
+                            self.music.stop()
+                    elif event.key == pygame.K_ESCAPE:
+                            self.show = False
+                            self.game_stop = 0
+                            self.music.stop()
+            
+            pygame.display.update()
+            
+
 
     def settings(self, pause=False):      
         push_button = False, False
@@ -640,11 +760,26 @@ class Main():
             pygame.time.set_timer(USEREVENT + 3, 1000)
         while self.running == True:
             pygame.mixer.music.set_volume(self.volume_music)
+            if self.player.state == PLAYER_DEAD:
+                img = pygame.image.load('data/sprites/you_dead.jpg')
+                img = pygame.transform.scale(img, (SCREEN_WIDTH, SCREEN_HEIGHT))
+                self.game_stop = 2
+                x = -SCREEN_WIDTH
+                while x < 0:
+                    x += 2
+                    if self.game_stop == 2:
+                        self.screen.blit(img, (x, 0))
+                        pygame.display.flip()
+                        self.event_loop()
+                import time
+                time.sleep(0.5)
+                self.running = False
+                game = Main(self.screen)
             if self.game_stop == 0:
                 for el in self.projective:
                     el.move()
-                self.render()
                 self.level_check()
+                self.render()
             self.event_loop()
 
     
@@ -703,6 +838,7 @@ class Main():
         sound.set_volume(self.volume_music)
         sound.play()
         pygame.mixer.music.stop()
+
 pygame.init()
 size = SCREEN_WIDTH, SCREEN_HEIGHT
 screen = pygame.display.set_mode(size)
