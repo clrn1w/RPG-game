@@ -585,6 +585,22 @@ class Main():
         time.sleep(0.5)
         self.running = False
         game = Main(self.screen)
+    
+    def game_win(self):
+        img = pygame.image.load('data/sprites/you_win.jpg')
+        img = pygame.transform.scale(img, (SCREEN_WIDTH, SCREEN_HEIGHT))
+        self.game_stop = 2
+        x = -SCREEN_WIDTH
+        while x < 0:
+            x += 2
+            if self.game_stop == 2:
+                self.screen.blit(img, (x, 0))
+                pygame.display.flip()
+                self.event_loop()
+        import time
+        time.sleep(2)
+        self.running = False
+        game = Main(self.screen)
 
 
     def new_item(self, item):
@@ -802,9 +818,7 @@ class Main():
             self.clear_map()         
             self.load_level()   
         else:
-            self.clear_map()
-            self.running = False
-            game = Main(self.screen)
+            self.game_win()
                 
 
     def load_level(self):
