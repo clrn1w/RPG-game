@@ -77,6 +77,14 @@ class Main():
                                 else:
                                     yd = True
                                     self.player.move(self.screen, x, y, xd, yd)
+                            elif event.key == pygame.K_s:
+                                self.player.direction = LOOK_DOWN
+                            elif event.key == pygame.K_d:
+                                self.player.direction = LOOK_RIGHT
+                            elif event.key == pygame.K_a:
+                                self.player.direction = LOOK_LEFT
+                            elif event.key == pygame.K_w:
+                                self.player.direction = LOOK_UP
                             elif event.key == pygame.K_DOWN:
                                 self.player.direction = LOOK_DOWN
                                 self.player.position[1] += 1
@@ -86,6 +94,16 @@ class Main():
                                     POSITION[1] -= 1
                                 else:
                                     y = True
+                                    self.player.move(self.screen, x, y, xd, yd)
+                            elif event.key == pygame.K_UP:
+                                self.player.direction = LOOK_UP
+                                self.player.position[1] -= 1
+                                POSITION[1] -= 1
+                                if self.player.position[1] > 15 or self.player.position[1] < 0 or self.player.contact_check(self.obj):
+                                    self.player.position[1] += 1
+                                    POSITION[1] += 1
+                                else:
+                                    yd = True
                                     self.player.move(self.screen, x, y, xd, yd)
                             elif event.key == pygame.K_RIGHT:
                                 self.player.direction = LOOK_RIGHT
@@ -495,7 +513,7 @@ class Main():
         self.show = True
         back_ground_pause = pygame.image.load('data/sprites/pause.png')
         back_ground_pause = pygame.transform.scale(back_ground_pause, (SCREEN_WIDTH//6, SCREEN_HEIGHT//3))
-        font = pygame.font.SysFont('comicsansms', 35)
+        font = pygame.font.SysFont('comicsansms', int(PLAYER_SPEED/1.2))
         menu_background = pygame.image.load('data/sprites/main_menu.png')
         arr =  pygame.image.load('data/sprites/choice.png')
         
@@ -510,12 +528,12 @@ class Main():
         self.music.play()
         self.music.set_volume(0.5)
         self.screen.blit(menu_background, (0,0))
-        self.screen.blit(back_ground_pause, ((SCREEN_WIDTH // 2.5 - 65), (SCREEN_HEIGHT//1.65-60*5-50)))
+        self.screen.blit(back_ground_pause, ((PLAYER_SPEED*8+LEFT_MOVE), (PLAYER_SPEED*3.5)))
         while self.show:
-            self.screen.blit(m_1, (SCREEN_WIDTH // 2.5, SCREEN_HEIGHT//1.65-60*5))
-            self.screen.blit(m_2, (SCREEN_WIDTH // 2.5, SCREEN_HEIGHT//1.65-60*4))
-            self.screen.blit(m_3, (SCREEN_WIDTH // 2.5, SCREEN_HEIGHT//1.65-60*3))
-            self.screen.blit(m_4, (SCREEN_WIDTH // 2.5, SCREEN_HEIGHT//1.65-60*2))
+            self.screen.blit(m_1, (PLAYER_SPEED*9+LEFT_MOVE, PLAYER_SPEED*4.5))
+            self.screen.blit(m_2, (PLAYER_SPEED*9+LEFT_MOVE, PLAYER_SPEED*5.5))
+            self.screen.blit(m_3, (PLAYER_SPEED*9+LEFT_MOVE, PLAYER_SPEED*6.5))
+            self.screen.blit(m_4, (PLAYER_SPEED*9+LEFT_MOVE, PLAYER_SPEED*7.5))
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.show = False
@@ -590,9 +608,10 @@ class Main():
 
     def new_item(self, item):
         arr_c = 1
-        font = pygame.font.SysFont('comicsansms', 35)
+        font = pygame.font.SysFont('comicsansms', int(PLAYER_SPEED*0.8))
         item_name = item[0]
         item_type = ['Poison', 'Amulet', 'Wear', 'Item'][item[1]-1]
+        item_icon = ['data/sprites/poison_ic.png', 'data/sprites/amulet_ic.png', 'data/sprites/wear_ic.png', 'data/sprites/item_ic.png'][item[1]-1]
         item_mp_bonus = item[2]
         item_hp_bonus = item[3]
         item_arr_damage_bonus = item[4]
@@ -606,8 +625,8 @@ class Main():
 
         text_mp_bonus = font.render(f"Mana Bonus:", True, (177, 179, 177))
         text_hp_bonus = font.render(f"HP Bonus:", True, (177, 179, 177))
-        text_arr_damage_bonus = pygame.font.SysFont('comicsansms', 25).render(f"Arrow DMG Bonus:", True, (177, 179, 177))
-        text_skill_bonus = pygame.font.SysFont('comicsansms', 20).render(f"Fire Arrow DMG Bonus:", True, (177, 179, 177))
+        text_arr_damage_bonus = pygame.font.SysFont('comicsansms', int(PLAYER_SPEED//2)).render(f"Arrow DMG Bonus:", True, (177, 179, 177))
+        text_skill_bonus = pygame.font.SysFont('comicsansms', int(PLAYER_SPEED//2)).render(f"Fire Arrow DMG Bonus:", True, (177, 179, 177))
         if item_mp_bonus >= 0:
             text_item_mp_bonus = font.render(f"+{item_mp_bonus}", True, (0, 255, 0))
         if item_hp_bonus >= 0:
@@ -620,22 +639,27 @@ class Main():
         print(item)
         self.show = True
         back_ground_pause = pygame.image.load('data/sprites/pause.png')
-        back_ground_pause = pygame.transform.scale(back_ground_pause, (SCREEN_WIDTH // 3, SCREEN_HEIGHT//2))
+        back_ground_pause = pygame.transform.scale(back_ground_pause, (PLAYER_SPEED*12, PLAYER_SPEED*10))
+        item_icon = pygame.image.load(item_icon)
+        item_icon = pygame.transform.scale(item_icon, (PLAYER_SPEED, PLAYER_SPEED))
+        print(item_icon)
         m_1 = font.render("Ok", True, (255, 255, 255))
-        self.screen.blit(back_ground_pause, ((SCREEN_WIDTH // 3), (SCREEN_HEIGHT//1.65-60*5-50)))
+        self.screen.blit(back_ground_pause, ((PLAYER_SPEED*6+LEFT_MOVE), (PLAYER_SPEED*4)))
         while self.show:
-            self.screen.blit(m_1, (LEFT_MOVE + PLAYER_SPEED*13.5, PLAYER_SPEED*11.5))
+
+            self.screen.blit(m_1, (LEFT_MOVE + PLAYER_SPEED*15.5, PLAYER_SPEED*11.5))
             self.screen.blit(text_1, (LEFT_MOVE + PLAYER_SPEED*9.5, PLAYER_SPEED*5))
             self.screen.blit(text_item_name, (LEFT_MOVE + PLAYER_SPEED*7.5, PLAYER_SPEED*5.9))
-            self.screen.blit(text_item_mp_bonus, (LEFT_MOVE + PLAYER_SPEED*11, PLAYER_SPEED*8.5))
-            self.screen.blit(text_item_hp_bonus, (LEFT_MOVE + PLAYER_SPEED*11, PLAYER_SPEED*7.5))
-            self.screen.blit(text_item_arr_damage_bonus, (LEFT_MOVE + PLAYER_SPEED*11.4, PLAYER_SPEED*9.5))
-            self.screen.blit(text_item_skill_bonus, (LEFT_MOVE + PLAYER_SPEED*11.4, PLAYER_SPEED*10.5))
+            self.screen.blit(text_item_mp_bonus, (LEFT_MOVE + PLAYER_SPEED*14, PLAYER_SPEED*8.5))
+            self.screen.blit(text_item_hp_bonus, (LEFT_MOVE + PLAYER_SPEED*14, PLAYER_SPEED*7.5))
+            self.screen.blit(text_item_arr_damage_bonus, (LEFT_MOVE + PLAYER_SPEED*14.4, PLAYER_SPEED*9.5))
+            self.screen.blit(text_item_skill_bonus, (LEFT_MOVE + PLAYER_SPEED*14.4, PLAYER_SPEED*10.5))
             
             self.screen.blit(text_mp_bonus, (LEFT_MOVE + PLAYER_SPEED*7, PLAYER_SPEED*8.5))
             self.screen.blit(text_hp_bonus, (LEFT_MOVE + PLAYER_SPEED*7, PLAYER_SPEED*7.5))
             self.screen.blit(text_arr_damage_bonus, (LEFT_MOVE + PLAYER_SPEED*7, PLAYER_SPEED*9.7))
             self.screen.blit(text_skill_bonus, (LEFT_MOVE + PLAYER_SPEED*7, PLAYER_SPEED*10.7))
+            self.screen.blit(item_icon, (LEFT_MOVE+PLAYER_SPEED*14, PLAYER_SPEED*6))
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.show = False
