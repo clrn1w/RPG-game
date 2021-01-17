@@ -20,6 +20,7 @@ class Main():
         self.cell_size = PLAYER_SPEED
         self.obj = []
         self.killed_obj = []
+        self.killed_mobs = []
         self.obj.append(self.player)
         self.shelding = []
         self.sheld_active = []
@@ -30,6 +31,7 @@ class Main():
         #self.add_tnt(2, 1)
         self.background = pygame.image.load(r'data/sprites\\background_1.png')
         self.level = 0
+        self.portal = None
         self.volume_music = 1
         self.main_loop()
 
@@ -42,7 +44,7 @@ class Main():
                 elif event.type == USEREVENT + 1 and self.game_stop == 0:
                     self.player.state = PLAYER_ALIVE
                     pygame.time.set_timer(USEREVENT + 1, 0)
-                elif event.type == USEREVENT + 3 and self.game_stop == 0:
+                elif event.type == USEREVENT + 3 and self.game_stop == 0 and self.player.attacked == 0:
                     if self.player.attacked == 0 and self.player.hp < self.player.max_hp and self.player.state == PLAYER_ALIVE:
                         if self.player.hp + self.player.max_hp // 10 > self.player.max_hp:
                             self.player.hp = self.player.max_hp
@@ -178,76 +180,47 @@ class Main():
                                     pygame.mixer.music.stop()
                                 elif self.player.mp < SHELD_COUNT:
                                     self.play_music(pygame.mixer.Sound('data/music/error_mp.mp3'))
+                            elif event.key == pygame.K_u and self.player.state != PLAYER_SHOOT:
+                                    self.new_item(["MEGA EGG", 1, 9999,9999,9999,9999])
                             elif event.key == pygame.K_e:
                                 if self.player.direction == LOOK_RIGHT:
                                     for el in self.obj:
                                         if el.name == 'Chest' and el.state == 0:
                                             if el.x - 1 == self.player.position[0] and el.y == self.player.position[1]:
                                                 el.state = 1
-                                                items = el.items
-                                                for item in items:
-                                                    if self.player.max_hp + item[3] >= 20:
-                                                        self.player.max_hp += item[3]
-                                                    if self.player.max_mp + item[4] >= 20:
-                                                        self.player.max_mp += item[2]
-                                                    self.player.arrow_dmg += item[4]
-                                                    self.player.fire_arrow_dmg += item[5] 
-                                                    self.play_music(CHEST_OPEN)
-                                                    pygame.mixer.music.stop()
-                                                    self.game_stop = 1
-                                                    self.new_item(item)
+                                                self.play_music(CHEST_OPEN)
+                                                pygame.mixer.music.stop()
+                                                self.game_stop = 1
+                                                self.new_item(el.items[0])
                                 elif self.player.direction == LOOK_DOWN:
                                     for el in self.obj:
                                         if el.name == 'Chest' and el.state == 0:
                                             if el.x == self.player.position[0] and el.y - 1 == self.player.position[1]:
                                                 el.state = 1
-                                                items = el.items
-                                                for item in items:
-                                                    if self.player.max_hp + item[3] >= 20:
-                                                        self.player.max_hp += item[3]
-                                                    if self.player.max_mp + item[4] >= 20:
-                                                        self.player.max_mp += item[2]
-                                                    self.player.arrow_dmg += item[4]
-                                                    self.player.fire_arrow_dmg += item[5] 
-                                                    self.play_music(CHEST_OPEN)
-                                                    pygame.mixer.music.stop()
-                                                    self.game_stop = 1
-                                                    self.new_item(item)
+                                                self.play_music(CHEST_OPEN)
+                                                pygame.mixer.music.stop()
+                                                self.game_stop = 1
+                                                self.new_item(el.items[0])
 
                                 elif self.player.direction == LOOK_LEFT:
                                     for el in self.obj:
                                         if el.name == 'Chest' and el.state == 0:
                                             if el.x + 1 == self.player.position[0] and el.y == self.player.position[1]:
                                                 el.state = 1
-                                                items = el.items
-                                                for item in items:
-                                                    if self.player.max_hp + item[3] >= 20:
-                                                        self.player.max_hp += item[3]
-                                                    if self.player.max_mp + item[4] >= 20:
-                                                        self.player.max_mp += item[2]
-                                                    self.player.arrow_dmg += item[4] 
-                                                    self.player.fire_arrow_dmg += item[5]
-                                                    self.play_music(CHEST_OPEN)
-                                                    pygame.mixer.music.stop()
-                                                    self.game_stop = 1
-                                                    self.new_item(item)
+                                                item = el.items
+                                                self.play_music(CHEST_OPEN)
+                                                pygame.mixer.music.stop()
+                                                self.game_stop = 1
+                                                self.new_item(el.item[0])
                                 elif self.player.direction == LOOK_UP:
                                     for el in self.obj:
                                         if el.name == 'Chest' and el.state == 0:
                                             if el.x == self.player.position[0] and el.y + 1== self.player.position[1]:
                                                 el.state = 1
-                                                items = el.items
-                                                for item in items:
-                                                    if self.player.max_hp + item[3] >= 20:
-                                                        self.player.max_hp += item[3]
-                                                    if self.player.max_mp + item[4] >= 20:
-                                                        self.player.max_mp += item[2]
-                                                    self.player.arrow_dmg += item[4]
-                                                    self.player.fire_arrow_dmg += item[5] 
-                                                    self.play_music(CHEST_OPEN)
-                                                    pygame.mixer.music.stop()
-                                                    self.game_stop = 1
-                                                    self.new_item(item)
+                                                self.play_music(CHEST_OPEN)
+                                                pygame.mixer.music.stop()
+                                                self.game_stop = 1
+                                                self.new_item(el.items[0])
                         if event.key == pygame.K_r:
                             self.running = False
                             game = Main(self.screen)
@@ -257,15 +230,17 @@ class Main():
                             self.pause()
                         else:
                             self.game_stop = 0
-
-        except Exception as ex:
-            print(ex)
+        except:
+            pass
 
     def add_stone_1(self, xs, ys):
         self.obj.append(Stone(screen=self.screen, x=xs, y=ys, game=self))
 
     def add_tnt(self, xs, ys):
         self.obj.append(Tnt(screen=self.screen, x=xs, y=ys, game=self))
+    
+    def add_portal(self, xs, ys):
+        self.portal = Portal(screen=self.screen, x=xs, y=ys, game=self)
 
     def add_mob_ork(self, x, y):
         self.obj.append(Mob_ork(x=x, y=y, game=self, name='Ork'))
@@ -310,6 +285,8 @@ class Main():
         self.screen.blit(self.background, (0, 0))
         for el in self.killed_obj:
             el.render(screen=self.screen)
+        for el in self.killed_mobs:
+            el.render(screen=self.screen)
         self.player.render(self.screen)
         for y in range(16):
             for x in range(22):
@@ -331,6 +308,10 @@ class Main():
             el.render(screen=self.screen)
             if el.name in ['Ork', 'Dragon']:
                 el.render_ui(screen=self.screen)
+        
+        # рендер портала
+        self.portal.render(screen=self.screen)
+        self.portal.contact_check()
 
         # рендер hp_bar
         pygame.draw.rect(self.screen, (0, 0, 0), (LEFT_MOVE + 48, SCREEN_HEIGHT - 102, self.player.stoping_hpframe+2, 23), 2)
@@ -512,7 +493,7 @@ class Main():
         arr_c = 5
         self.show = True
         back_ground_pause = pygame.image.load('data/sprites/pause.png')
-        back_ground_pause = pygame.transform.scale(back_ground_pause, (SCREEN_WIDTH//6, SCREEN_HEIGHT//3))
+        back_ground_pause = pygame.transform.scale(back_ground_pause, (PLAYER_SPEED*6, PLAYER_SPEED*8))
         font = pygame.font.SysFont('comicsansms', int(PLAYER_SPEED/1.2))
         menu_background = pygame.image.load('data/sprites/main_menu.png')
         arr =  pygame.image.load('data/sprites/choice.png')
@@ -607,6 +588,12 @@ class Main():
 
 
     def new_item(self, item):
+        if self.player.max_hp + item[3] >= 20:
+                self.player.max_hp += item[3]
+        if self.player.max_mp + item[4] >= 20:
+                self.player.max_mp += item[2]
+        self.player.arrow_dmg += item[4]
+        self.player.fire_arrow_dmg += item[5] 
         arr_c = 1
         font = pygame.font.SysFont('comicsansms', int(PLAYER_SPEED*0.8))
         item_name = item[0]
@@ -636,13 +623,11 @@ class Main():
         if item_skill_bonus >= 0:
             text_item_skill_bonus = font.render(f"+{item_skill_bonus}", True, (0, 255, 0))
         
-        print(item)
         self.show = True
         back_ground_pause = pygame.image.load('data/sprites/pause.png')
         back_ground_pause = pygame.transform.scale(back_ground_pause, (PLAYER_SPEED*12, PLAYER_SPEED*10))
         item_icon = pygame.image.load(item_icon)
         item_icon = pygame.transform.scale(item_icon, (PLAYER_SPEED, PLAYER_SPEED))
-        print(item_icon)
         m_1 = font.render("Ok", True, (255, 255, 255))
         self.screen.blit(back_ground_pause, ((PLAYER_SPEED*6+LEFT_MOVE), (PLAYER_SPEED*4)))
         while self.show:
@@ -802,21 +787,24 @@ class Main():
             if self.game_stop == 0:
                 for el in self.projective:
                     el.move()
-                self.level_check()
                 self.render()
+                self.level_check()
             self.event_loop()
 
     
     def level_check(self):
-        if len(self.killed_obj) == self.not_mobs_count:
-            self.level += 1
-            if self.level <= LEVELS:   
-                self.clear_map()         
-                self.load_level()
-            else:
-                self.clear_map()
-                self.running = False
-                game = Main(self.screen)
+        if len(self.killed_mobs) == self.not_mobs_count:
+            self.portal.opening()
+    
+    def new_level(self):
+        self.level += 1
+        if self.level <= LEVELS:   
+            self.clear_map()         
+            self.load_level()   
+        else:
+            self.clear_map()
+            self.running = False
+            game = Main(self.screen)
                 
 
     def load_level(self):
@@ -839,11 +827,14 @@ class Main():
                     elif levels[self.level][y][x] == 4:
                         self.add_mob_dragon(x + 1, y + 1)
                         self.not_mobs_count += 1
+                    elif levels[self.level][y][x] == 'p':
+                        self.add_portal(x + 1, y + 1)
 
     def clear_map(self):
         self.obj = []
         self.obj.append(self.player)
         self.killed_obj = []
+        self.killed_mobs = []
         self.projective = []
         self.shelding = []
         self.sheld_active = []

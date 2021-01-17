@@ -111,7 +111,6 @@ class Stone():
     def hp_add(self, dmg):
         self.hp += dmg
         if self.hp <= 0:
-            print('STONE DESTROY')
             self.kill()
     
     def kill(self):
@@ -146,7 +145,6 @@ class Tnt():
     def hp_add(self, dmg):
         self.hp += dmg
         if self.hp <= 0:
-            print('TNT BOOM')
             self.kill()
     
     def kill(self):
@@ -234,7 +232,6 @@ class Mob_ork():
     def hp_add(self, dmg):
         self.hp += dmg
         if self.hp <= 0:
-            print('ORK DESTROY')
             self.kill()
     
     def kill(self):
@@ -246,8 +243,8 @@ class Mob_ork():
                 self.game.player.attacked = 1
             else:
                 self.stop = 0
-                self.game.player.attacked = 0
-            self.game.killed_obj.append(self)
+            self.game.player.attacked = 0
+            self.game.killed_mobs.append(self)
             self.game.play_music(self.musik_deth)
 
     def contact_check(self, obj):
@@ -379,7 +376,7 @@ class Mob_ork():
                     if self.game.player not in self.game.shelding:
                         if self.game.player.hp > 0:
                             self.game.play_music(PLAYER_KICK_MUSIC)
-                else:
+                elif not self.attack_1() and self.stop == 1:
                     self.state = PLAYER_ALIVE
                     self.stop = 0
                     self.game.player.attacked = 0
@@ -468,7 +465,6 @@ class Mob_dragon():
     def hp_add(self, dmg):
         self.hp += dmg
         if self.hp <= 0:
-            print('DRAGON DESTROY')
             self.kill()
     
     def kill(self):
@@ -481,7 +477,8 @@ class Mob_dragon():
             else:
                 self.stop = 0
                 self.game.player.attacked = 0
-            self.game.killed_obj.append(self)
+            self.game.player.attacked = 0
+            self.game.killed_mobs.append(self)
             self.game.play_music(self.musik_deth)
 
 
@@ -601,7 +598,7 @@ class Mob_dragon():
                 if self.attack_1():
                     self.state = PLAYER_SHOOT
                     self.stop = 1
-                else:
+                elif not self.attack_1() and self.stop == 1:
                     self.state = PLAYER_ALIVE
                     self.stop = 0
             else:
@@ -686,7 +683,6 @@ class Mob_ork_boss():
     def hp_add(self, dmg):
         self.hp += dmg
         if self.hp <= 0:
-            print('ORK DESTROY')
             self.kill()
     
     def kill(self):
@@ -699,7 +695,8 @@ class Mob_ork_boss():
             else:
                 self.stop = 0
                 self.game.player.attacked = 0
-            self.game.killed_obj.append(self)
+            self.game.player.attacked = 0
+            self.game.killed_mobs.append(self)
             self.game.play_music(self.musik_deth)
             pygame.mixer.music.stop()
 
@@ -833,7 +830,7 @@ class Mob_ork_boss():
                     if self.game.player not in self.game.shelding:
                         if self.game.player.hp > 0:
                             self.game.play_music(PLAYER_KICK_MUSIC)
-                else:
+                elif not self.attack_1() and self.stop == 1:
                     self.state = PLAYER_ALIVE
                     self.stop = 0
                     self.game.player.attacked = 0
@@ -854,3 +851,28 @@ class Mob_ork_boss():
         elif pos_ork_x == pos_p_x and pos_ork_y + 1== pos_p_y:
             res = True
         return res
+
+
+class Portal():
+    def __init__(self, game, x, y, screen):
+        self.game = game
+        self.x = x-1
+        self.y = y-1
+        self.open = 0
+    
+    def render(self, screen):
+        if self.open == 1:
+            self.image = pygame.image.load(r'data/sprites/portal.png')
+            self.image = pygame.transform.scale(self.image, (int(PLAYER_SPEED), int(PLAYER_SPEED)))
+            screen.blit(self.image, (self.x * int(PLAYER_SPEED) + LEFT_MOVE, self.y * int(PLAYER_SPEED)))
+
+    def contact_check(self):
+        if self.open == 1:
+            if self.game.player.position[0] == self.x and self.game.player.position[1] == self.y:
+                self.game.play_music(pygame.mixer.Sound(r'data/music/portal_tp.mp3'))
+                self.game.new_level()
+    
+    def opening(self):
+        if self.open != 1:
+            self.game.play_music(pygame.mixer.Sound(r'data/music/portal_open.mp3'))
+            self.open = 1
