@@ -44,8 +44,8 @@ class Main():
                 elif event.type == USEREVENT + 1 and self.game_stop == 0:
                     self.player.state = PLAYER_ALIVE
                     pygame.time.set_timer(USEREVENT + 1, 0)
-                elif event.type == USEREVENT + 3 and self.game_stop == 0 and self.player.attacked == 0:
-                    if self.player.attacked == 0 and self.player.hp < self.player.max_hp and self.player.state == PLAYER_ALIVE:
+                elif event.type == USEREVENT + 3 and self.game_stop == 0:
+                    if self.player.attacked == 0 and self.player.hp < self.player.max_hp and self.player.state == PLAYER_ALIVE and self.player.attacked == 0:
                         if self.player.hp + self.player.max_hp // 10 > self.player.max_hp:
                             self.player.hp = self.player.max_hp
                         else:
@@ -148,7 +148,7 @@ class Main():
                                 sound.set_volume(self.volume_music)
                                 sound.play()
                                 pygame.mixer.music.stop()
-                            elif event.key == pygame.K_l and self.player.state != PLAYER_SHOOT:
+                            elif event.key == pygame.K_z and self.player.state != PLAYER_SHOOT:
                                 pos = POSITION
                                 if self.player.mp >= FIRE_ARROW_COUNT:
                                     self.player.state = PLAYER_SHOOT
@@ -181,7 +181,7 @@ class Main():
                                 elif self.player.mp < SHELD_COUNT:
                                     self.play_music(pygame.mixer.Sound('data/music/error_mp.mp3'))
                             elif event.key == pygame.K_u and self.player.state != PLAYER_SHOOT:
-                                    self.new_item(["MEGA EGG", 1, 9999,9999,9999,9999])
+                                    self.new_item(["MEGA EGG", 1, 9999,9999,9999,999999])
                             elif event.key == pygame.K_e:
                                 if self.player.direction == LOOK_RIGHT:
                                     for el in self.obj:
@@ -211,7 +211,7 @@ class Main():
                                                 self.play_music(CHEST_OPEN)
                                                 pygame.mixer.music.stop()
                                                 self.game_stop = 1
-                                                self.new_item(el.item[0])
+                                                self.new_item(el.items[0])
                                 elif self.player.direction == LOOK_UP:
                                     for el in self.obj:
                                         if el.name == 'Chest' and el.state == 0:
@@ -221,17 +221,15 @@ class Main():
                                                 pygame.mixer.music.stop()
                                                 self.game_stop = 1
                                                 self.new_item(el.items[0])
-                        if event.key == pygame.K_r:
-                            self.running = False
-                            game = Main(self.screen)
                     if event.key == pygame.K_ESCAPE:
                         if self.game_stop == 0:
                             self.game_stop = 1
                             self.pause()
                         else:
                             self.game_stop = 0
-        except:
-            pass
+        except Exception as ex:
+            print(ex)
+        
 
     def add_stone_1(self, xs, ys):
         self.obj.append(Stone(screen=self.screen, x=xs, y=ys, game=self))
@@ -280,7 +278,7 @@ class Main():
         text_mp_player = font.render(f'{mp} / {self.player.max_mp}', 1, (255, 255, 255))
         text_mp = font.render(f'MP:', 1, (0, 0, 0))
 
-        faq_text = [font.render(f'"L" - Fire arrow ({self.player.fire_arrow_dmg} dmg; 90 mp)', 1, (0, 0, 0)), font.render(f'"X" - Sheld (10 sec; 40 mp)', 1, (0, 0, 0)), font.render(f'"SPACE" - Shoot ({self.player.arrow_dmg} dmg)', 1, (0, 0, 0))]
+        #faq_text = [font.render(f'"L" - Fire arrow ({self.player.fire_arrow_dmg} dmg; 90 mp)', 1, (0, 0, 0)), font.render(f'"X" - Sheld (10 sec; 40 mp)', 1, (0, 0, 0)), font.render(f'"SPACE" - Shoot ({self.player.arrow_dmg} dmg)', 1, (0, 0, 0))]
         self.background = pygame.transform.scale(self.background, (SCREEN_WIDTH, SCREEN_HEIGHT))
         self.screen.blit(self.background, (0, 0))
         for el in self.killed_obj:
@@ -343,9 +341,38 @@ class Main():
 
         # faq
         i = 0
-        for el in faq_text:
-            self.screen.blit(el, (LEFT_MOVE + 300,  SCREEN_HEIGHT - 45 - i))
-            i += 25
+        image_sword = pygame.image.load('data/sprites/sword_ic.png')
+        image_sword = pygame.transform.scale(image_sword, (int(PLAYER_SPEED*1.2), int(PLAYER_SPEED*1.2)))
+        self.screen.blit(image_sword, (LEFT_MOVE+PLAYER_SPEED*5, int(PLAYER_SPEED*16)))
+        dmg_arr_1 = self.player.arrow_dmg
+        if dmg_arr_1 >= 1000000:
+            dmg_arr_1 = str(dmg_arr_1 // 1000000)+'.'+str((dmg_arr_1-dmg_arr_1 // 1000000)//1000)[0]+'m'
+        elif dmg_arr_1 >= 1000:
+            dmg_arr_1 = str(dmg_arr_1 // 1000)+'.'+str((dmg_arr_1-dmg_arr_1 // 1000)//100)[0]+'k'
+        damage_arrow1 = pygame.font.Font(None, int(PLAYER_SPEED*0.45)).render(f'({dmg_arr_1} DMG)', 1, (255, 0, 0))
+        self.screen.blit(damage_arrow1, (LEFT_MOVE+PLAYER_SPEED*5, int(PLAYER_SPEED*17)))
+
+        image_arrow = pygame.image.load('data/sprites/arrow_ic_2.png')
+        image_arrow = pygame.transform.scale(image_arrow, (int(PLAYER_SPEED*1.2), int(PLAYER_SPEED*1.2)))
+        dmg_arr_1 = self.player.fire_arrow_dmg
+        if dmg_arr_1 >= 1000000:
+            dmg_arr_1 = str(dmg_arr_1 // 1000000)+'.'+str((dmg_arr_1-dmg_arr_1 // 1000000)//1000)[0]+'m'
+        elif dmg_arr_1 >= 1000:
+            dmg_arr_1 = str(dmg_arr_1 // 1000)+'.'+str((dmg_arr_1-dmg_arr_1 // 1000)//100)[0]+'k'
+        damage_arrow2 = pygame.font.Font(None, int(PLAYER_SPEED*0.45)).render(f'({dmg_arr_1} DMG)', 1, (255, 0, 0))
+        self.screen.blit(image_arrow, (LEFT_MOVE+PLAYER_SPEED*9, int(PLAYER_SPEED*16)))
+        self.screen.blit(damage_arrow2, (LEFT_MOVE+PLAYER_SPEED*9, int(PLAYER_SPEED*17)))
+
+        image_sheld = pygame.image.load('data/sprites/sheld_2.png')
+        image_sheld = pygame.transform.scale(image_sheld, (int(PLAYER_SPEED*1.2), int(PLAYER_SPEED*1.2)))
+        self.screen.blit(image_sheld, (LEFT_MOVE+PLAYER_SPEED*7, int(PLAYER_SPEED*16)))
+
+        move_ic = pygame.image.load('data/sprites/move_ic.png')
+        move_ic = pygame.transform.scale(move_ic, (int(PLAYER_SPEED*2), int(PLAYER_SPEED*2)))
+        self.screen.blit(move_ic, (LEFT_MOVE+PLAYER_SPEED*20, int(PLAYER_SPEED*15.5)))
+        #for el in faq_text:
+            #self.screen.blit(el, (LEFT_MOVE + 300,  SCREEN_HEIGHT - 45 - i))
+            #i += 25
         pygame.display.flip()
     
     def return_music(self):
@@ -481,6 +508,11 @@ class Main():
                     elif event.key == 13:
                         self.level = level_c -1
                         self.show = False
+                    elif event.key == pygame.K_ESCAPE:
+                        self.music.stop()
+                        self.show = False
+                        self.running = False
+                        game = Main(self.screen)
                 recolor = [font.render(f"LEVEL: {level_c}", True, (255, 255, 255)), level_c-1]
                 for el in texts:
                     if el[1] == level_c - 1:
@@ -604,6 +636,7 @@ class Main():
 
 
     def new_item(self, item):
+        print(item)
         if self.player.max_hp + item[3] >= 20:
                 self.player.max_hp += item[3]
         if self.player.max_mp + item[4] >= 20:
@@ -647,6 +680,7 @@ class Main():
         m_1 = font.render("Ok", True, (255, 255, 255))
         self.screen.blit(back_ground_pause, ((PLAYER_SPEED*6+LEFT_MOVE), (PLAYER_SPEED*4)))
         while self.show:
+            self.screen.blit(back_ground_pause, ((PLAYER_SPEED*6+LEFT_MOVE), (PLAYER_SPEED*4)))
 
             self.screen.blit(m_1, (LEFT_MOVE + PLAYER_SPEED*15.5, PLAYER_SPEED*11.5))
             self.screen.blit(text_1, (LEFT_MOVE + PLAYER_SPEED*9.5, PLAYER_SPEED*5))

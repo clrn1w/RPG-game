@@ -190,7 +190,6 @@ class Fire_arrow():
                                 if el.hp >0:
                                     self.game.play_music(el.musik_kick)
                                     pygame.mixer.music.stop()
-                                print('damaged')
                             self.remove()
                     else:
                         if arrow_x == el_x and arrow_y + 1 == el_y:
@@ -235,8 +234,7 @@ class Fire_arrow():
                                 el.hp_add(dmg=-int(self.damage))
                             self.remove()
             else:
-                print('blocked')
-
+                pass
     def remove(self):
         if self in self.game.projective:
             self.game.projective.remove(self)
