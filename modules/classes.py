@@ -632,7 +632,7 @@ class Mob_ork_boss():
         self.name = name
         self.position = [x - 1, y - 1]
         self.game = game
-        self.image = [r'data/sprites/mobs/ork/ork_right_alive.png', r'data/sprites/mobs/ork/ork_right_shoot.png', r'data/sprites/mobs/ork/ork_down_alive.png', r'data/sprites/mobs/ork/ork_down_shoot.png', r'data/sprites/mobs/ork/ork_up_alive.png', r'data/sprites/mobs/ork/ork_up_shoot.png', r'data/sprites/mobs/ork/ork_dead.png']
+        self.image = [r'data/sprites/mobs/ork_boss/ork_right_alive.png', r'data/sprites/mobs/ork_boss/ork_right_shoot.png', r'data/sprites/mobs/ork_boss/ork_down_alive.png', r'data/sprites/mobs/ork_boss/ork_down_shoot.png', r'data/sprites/mobs/ork_boss/ork_up_alive.png', r'data/sprites/mobs/ork_boss/ork_up_shoot.png', r'data/sprites/mobs/ork_boss/ork_dead.png']
         self.image = [pygame.image.load(elem) for elem in self.image]
         self.images = []
         self.hp = 1000
